@@ -1,4 +1,4 @@
-package objects
+package agent
 
 import (
 	"math/rand"
@@ -10,13 +10,14 @@ type asset struct {
 	participation float32
 }
 
+type assetInventory map[string]asset
 
 
 func newAsset(amount float32, participation float32) asset {
 	return asset{amount: amount, participation: participation}
 }
 
-func NewAssetInventoryRandom(names []string) map[string]asset {
+func newAssetInventoryRandom(names []string) assetInventory {
 	assetInventory := make(map[string]asset)
 	participation_list := randomPartition(len(names))
 	for i, name := range names {
@@ -45,7 +46,7 @@ func randomPartition(parts int) []float32 {
     result := make([]float32, parts)
     for i := 0; i < parts; i++ {
         chunk := cuts[i+1] - cuts[i]
-        result[i] = float32(chunk) / 100.0 // cast here to float32
+        result[i] = float32(chunk) / 100.0 
     }
 
     return result
