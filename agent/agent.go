@@ -1,31 +1,51 @@
 package agent
 
+type assetFeature map[string]float32
+
 type agent struct {
-	assets assetInventory
+	assets *[]string
+	assets_amount assetFeature
+	assets_participation assetFeature
+	assets_MRS assetFeature
+	assets_price_min assetFeature
+	assets_price_max assetFeature
 }
 
-func NewAgent(names []string) agent {
-	return agent{assets: newAssetInventoryRandom(names)}
-}
+func NewAgent(assets *[]string) agent {
 
-
-func (a agent) redoParticipationAssets() {
-	new_participation_list := randomPartition(len(a.assets))
-
-	counter := 0
-	for key := range a.assets {
-		asset := a.assets[key]
-		asset.participation = new_participation_list[counter]
-		a.assets[key] = asset 
-		counter += 1
+	var asset_features_zeroes map[string]float32 
+	
+	for _, name := range *assets {
+		asset_features_zeroes[name] = 0
 	}
+
+	a := agent{
+		assets: assets,
+		assets_amount: asset_features_zeroes,
+		assets_participation: asset_features_zeroes,
+		assets_MRS: asset_features_zeroes,
+		assets_price_min: asset_features_zeroes,
+		assets_price_max: asset_features_zeroes,
+	}
+
+	a.randomParticipation()
+	a.randomAmounts()
+	a.mrsCalculator()
+
+	a.assets_price_min = a.assets_MRS
+	a.assets_price_max = a.assets_MRS
+	
+
+	return a
 }
+
+
 
 // One of the goods is money, so the agent has to calculate his or her total
 // budget by converting the total inventory of goods into money
 // The problem is that since there is no price stablished (it maybe emerges from the
 // transactions of the agents), there is no fixed budget so the first price for
-// the first agent is going to be his RMS between money and other goods
+// the first agent is going to be his MRS between money and other goods
 // and then is going to be updated for the last price he or she payed in
 // grand exchange. But also could be a set of prices, max and min or something like that
 
